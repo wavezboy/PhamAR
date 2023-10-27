@@ -106,7 +106,7 @@ class StartDialog(QDialog, Ui_Dialog):
         current_time = datetime.datetime.now().strftime("%H:%M:%S")  
 
         stock_data = stock_collection.find_one({"item_name": drug_name})
-        price = stock_data("price", 0) * quantity
+     
 
 
         if not stock_data:
@@ -115,8 +115,8 @@ class StartDialog(QDialog, Ui_Dialog):
             QMessageBox.critical(self, "Error",
                                  f"No enough quantity in stock for {drug_name}. Available stock: {stock_data['quantity']}.")
         else:
-            price = stock_data("price", 0) * quantity  # Use .get() method
-            self.total += price
+            price = stock_data.get("price", 0) * quantity  # Use .get() method
+            self.total += int(price)
             self.ui.totalOrders.setText(str(self.total))
 
 
@@ -137,7 +137,8 @@ class StartDialog(QDialog, Ui_Dialog):
             
             
             
-        
+            
+
 
     # Function to record orders in purchases and update stock
     def remove_order(self):
