@@ -44,7 +44,7 @@ class StockDialog(Ui_Dialog, QDialog):
         drug_name = self.ui.ordersName_2.text()
         provider = self.ui.ordersName_5.text()
         expiry_date = self.ui.ordersName_4.text()
-        quantity = (self.ui.ordersName_3.text())
+        quantity = int(self.ui.ordersName_3.text())
         try:
             new_drug = {
                 "item_name": drug_name,
