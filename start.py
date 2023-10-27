@@ -106,16 +106,19 @@ class StartDialog(QDialog, Ui_Dialog):
         current_time = datetime.datetime.now().strftime("%H:%M:%S")  
 
         stock_data = stock_collection.find_one({"item_name": drug_name})
+        price = stock_data("price", 0) * quantity
+
 
         if not stock_data:
             QMessageBox.critical(self, "Error", f"{drug_name} is not available in stock.")
-        elif stock_data["quantity"] < quantity:
+        elif int(stock_data["quantity"]) < quantity:
             QMessageBox.critical(self, "Error",
                                  f"No enough quantity in stock for {drug_name}. Available stock: {stock_data['quantity']}.")
         else:
-            price = stock_data["price"] * quantity
+            price = stock_data("price", 0) * quantity  # Use .get() method
             self.total += price
             self.ui.totalOrders.setText(str(self.total))
+
 
             purchase_data = {
                 "item_name": drug_name,
@@ -131,6 +134,10 @@ class StartDialog(QDialog, Ui_Dialog):
             stock_collection.update_one({"item_name": drug_name}, {"$inc": {"quantity": -quantity}})
             self.refresh_data(customer_name, current_date)
             QMessageBox.information(self, "Success", "Drug added successfully.")
+            
+            
+            
+        
 
     # Function to record orders in purchases and update stock
     def remove_order(self):
