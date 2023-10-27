@@ -5,6 +5,10 @@ import pymongo
 from widget_manager import widget
 from mydatabase import collection
 
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client["pham"]  # Replace with your MongoDB database name
+purchases_collection = db["purchases"]
+stock_collection = db["stock"]
 
 # Sets up the UI, connects button clicks to their respective functions
 class StockDialog(Ui_Dialog, QDialog):
@@ -26,7 +30,7 @@ class StockDialog(Ui_Dialog, QDialog):
     def load_data(self):
         self.ui.tableWidget.clearContents()
         self.ui.tableWidget.setRowCount(0)
-        data = collection.find({}, projection={"_id": 0, "item_name": 1, "provider_name": 1, "quantity": 1, "expire_date": 1})
+        data = stock_collection.find({}, projection={"_id": 0, "item_name": 1, "provider_name": 1, "quantity": 1, "expire_date": 1})
         data = list(data)
         self.ui.tableWidget.setRowCount(len(data))
         for row_num, doc in enumerate(data):
@@ -48,7 +52,7 @@ class StockDialog(Ui_Dialog, QDialog):
                 "expire_date": expiry_date,
                 "quantity": quantity
             }
-            collection.insert_one(new_drug)
+            stock_collection.insert_one(new_drug)
             self.load_data()
             QMessageBox.information(self, "Added Drug", f"{drug_name} added to stock successfully!")
         except Exception as e:
@@ -58,11 +62,11 @@ class StockDialog(Ui_Dialog, QDialog):
     def remove_drug(self):
         drug_name = self.ui.ordersName_2.text()
         try:
-            drug = collection.find_one({"item_name": drug_name})
+            drug = stock_collection.find_one({"item_name": drug_name})
             if not drug:
                 QMessageBox.information(self, "Error", f"{drug_name} does not exist in the stock!")
                 return
-            collection.delete_one({"item_name": drug_name})
+            stock_collection.delete_one({"item_name": drug_name})
             self.load_data()
             QMessageBox.information(self, "Removed Drug", f"{drug_name} removed from stock successfully!")
         except Exception as e:

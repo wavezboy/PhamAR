@@ -167,6 +167,7 @@ class StartDialog(QDialog, Ui_Dialog):
         self.load_stock(drug_name)
 
     # Retrieves the data from the database
+                
     def load_stock(self, drug_name=None):
         self.ui.tableWidget.clearContents()
         self.ui.tableWidget.setRowCount(0)
@@ -177,9 +178,10 @@ class StartDialog(QDialog, Ui_Dialog):
         self.ui.tableWidget.setRowCount(len(data))
         for row_num, row_data in enumerate(data):
             self.ui.tableWidget.insertRow(row_num)
-            for col_num, value in row_data.items():
-                item = QTableWidgetItem(str(value))
+            for col_num, value in enumerate(row_data.values()):
+                item = QTableWidgetItem(str(value))  # Ensure value is converted to a string
                 self.ui.tableWidget.setItem(row_num, col_num, item)
+
 
     # Opens sign out widget
     def signOut(self):
